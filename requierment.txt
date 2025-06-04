@@ -1,0 +1,26 @@
+# ==== BACKEND (Django REST API) ====
+Django>=4.0
+djangorestframework
+gunicorn
+
+# ==== IA / Deep Learning ====
+tensorflow>=2.9
+numpy
+scipy
+pillow
+opencv-python-headless  # Pour éviter les erreurs d’affichage dans des environnements serveurs
+
+# ==== OCR ====
+pytesseract
+python-docx  # si tu veux générer un rapport ou un fichier après vérif
+
+# ==== Sécurité et manipulation de fichiers ====
+python-dotenv
+requests
+
+# ==== Pour CORS entre Django et Vue.js ====
+django-cors-headers
+
+# ==== Dépendances utiles pour la visualisation et le debug local ====
+matplotlib
+
