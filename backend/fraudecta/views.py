@@ -4,6 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from users.serializers import UserRegisterSerializer
+from users.models import CustomUser
+from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import AllowAny
+from .serializers import RegisterSerializer
 
 import numpy as np
 import tensorflow as tf
@@ -14,8 +19,21 @@ import os
 
 from .prediction import predict_image
 from .ocr_utils import extract_id
-from .models import Diplome  # Assure-toi que le modèle existe et est importé correctement
+from .models import Diplome  
 
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            if CustomUser.objects.filter(email=email).exists():
+                return Response({'error': 'Cet email est déjà utilisé.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer.save()
+            return Response({'message': 'Utilisateur créé avec succès'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 # Vue API pour la prédiction du diplôme
 class PredictDiplomeView(APIView):
     def post(self, request):
@@ -67,3 +85,17 @@ def ocr_verification(request):
         'id': id_extrait,
         'trouve': existe
     })
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        
+        token['email'] = user.email
+        return token
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

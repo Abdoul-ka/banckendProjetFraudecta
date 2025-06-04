@@ -1,10 +1,6 @@
 from rest_framework import serializers
-
-
-class RegisterSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100)
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, min_length=6)
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class EmailLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -27,3 +23,19 @@ class EmailLoginSerializer(serializers.Serializer):
                 'email': user.email,
             }
         }
+
+# users/serializers
+from rest_framework import serializers
+from .models import CustomUser
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        return CustomUser.objects.create_user(**validated_data)
+

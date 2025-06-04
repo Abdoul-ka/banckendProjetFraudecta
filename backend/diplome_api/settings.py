@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'fraudecta',
     'corsheaders',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -79,14 +80,11 @@ WSGI_APPLICATION = 'diplome_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # fonctionne aussi pour MariaDB
-        'NAME': 'etudiant_promo_2025',
-        'USER': 'root',
-        'PASSWORD': 'test',
-        'HOST': 'localhost',
-        'PORT': '3307',  # port par défaut de MariaDB/MySQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 
@@ -130,3 +128,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+AUTH_USER_MODEL = 'users.CustomUser'
